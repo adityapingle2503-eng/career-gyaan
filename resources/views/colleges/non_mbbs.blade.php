@@ -172,17 +172,18 @@
                 <h2 class="course-title"><i class="fa-solid {{ $icon }}"></i> {{ $cStr }} Colleges</h2>
                 <div class="college-grid">
                     @foreach($courseColleges as $c)
-                        <div class="col-card" data-state="{{ $col->state }}" " data-name="{{ strtolower($c->
-                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; padding: 16px 20px 0;">
-                        @if($col->rank)
-                            <span style="font-size:10px; background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:12px; font-weight:700;" title="CareerGyan Rank">CG #{{ $col->rank }}</span>
-                        @endif
-                        @if($col->government_rank)
-                            <span style="font-size:10px; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:700;" title="Govt NIRF Rank">NIRF #{{ $col->government_rank }}</span>
-                        @endif
-                        @if($col->naac_grade)
-                            <span style="font-size:10px; background:#dcfce7; color:#14532d; padding:2px 8px; border-radius:12px; font-weight:700;" title="NAAC Grade">NAAC {{ $col->naac_grade }}</span>
-                        @endifname) }}" data-course="{{ $cStr }}" data-type="{{ $c->type }}">
+                        <div class="non-card" data-state="{{ $c->state }}" data-name="{{ strtolower($c->name) }}" data-course="{{ $cStr }}" data-type="{{ $c->type }}">
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; padding: 16px 20px 0;">
+                                @if($c->rank)
+                                    <span style="font-size:10px; background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:12px; font-weight:700;" title="CareerGyan Rank">CG #{{ $c->rank }}</span>
+                                @endif
+                                @if($c->government_rank)
+                                    <span style="font-size:10px; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:700;" title="Govt NIRF Rank">NIRF #{{ $c->government_rank }}</span>
+                                @endif
+                                @if($c->naac_grade)
+                                    <span style="font-size:10px; background:#dcfce7; color:#14532d; padding:2px 8px; border-radius:12px; font-weight:700;" title="NAAC Grade">NAAC {{ $c->naac_grade }}</span>
+                                @endif
+                            </div>
                             <div class="card-top">
                                 <span class="tag-course">{{ $cStr }}</span>
                                 <h3 class="card-title">{{ $c->name }}</h3>

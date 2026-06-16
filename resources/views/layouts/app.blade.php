@@ -1130,9 +1130,51 @@
   const searchInput = document.getElementById('globalSearchInput');
   const searchResults = document.getElementById('globalSearchResults');
 
+  function getSearchHistory() {
+    try { return JSON.parse(localStorage.getItem('cg_search_history') || '[]'); } catch(e) { return []; }
+  }
+  
+  function saveSearchHistory(query) {
+    if (!query || query.length < 2) return;
+    let history = getSearchHistory();
+    history = history.filter(q => q.toLowerCase() !== query.toLowerCase());
+    history.unshift(query);
+    if (history.length > 5) history.pop();
+    localStorage.setItem('cg_search_history', JSON.stringify(history));
+  }
+
+  function showSearchHistory() {
+    let history = getSearchHistory();
+    if (history.length === 0) {
+      searchResults.innerHTML = `
+        <div class="search-empty">
+          <i class="fa-solid fa-magnifying-glass" style="font-size: 32px; color: var(--border); margin-bottom: 16px;"></i>
+          <p>Type to start exploring amazing careers...</p>
+        </div>
+      `;
+      return;
+    }
+    let html = `<div class="search-section-title">Recent Searches</div>`;
+    history.forEach(q => {
+      let escapedQ = q.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      html += `
+        <div class="search-item" style="cursor:pointer;" onclick="searchInput.value='${escapedQ}'; performSearch();">
+          <div class="search-item-icon" style="background: var(--surface); color: var(--text-2);">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="search-item-content">
+            <h4 style="margin:0; font-size:14px;">${q}</h4>
+          </div>
+        </div>
+      `;
+    });
+    searchResults.innerHTML = html;
+  }
+
   function openSearch() {
     searchOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    if(searchInput.value.trim() === '') showSearchHistory();
     setTimeout(() => searchInput.focus(), 100);
   }
 
@@ -1165,12 +1207,7 @@
     const query = searchInput.value.trim();
 
     if (query.length < 2) {
-      searchResults.innerHTML = `
-        <div class="search-empty">
-          <i class="fa-solid fa-magnifying-glass" style="font-size: 32px; color: var(--border); margin-bottom: 16px;"></i>
-          <p>Type to start exploring amazing careers...</p>
-        </div>
-      `;
+      showSearchHistory();
       return;
     }
 
@@ -1200,7 +1237,7 @@
           html += `<div class="search-section-title">Fields & Streams</div>`;
           data.config_careers.forEach(f => {
             html += `
-              <a href="${f.url}" class="search-item" onclick="closeSearch()">
+              <a href="${f.url}" class="search-item" onclick="saveSearchHistory(searchInput.value); closeSearch()">
                 <div class="search-item-icon" style="background: ${f.bg_color}; color: ${f.color};">
                   <i class="fa-solid ${f.icon}"></i>
                 </div>
@@ -1217,7 +1254,7 @@
           html += `<div class="search-section-title">Career Paths</div>`;
           data.db_careers.forEach(c => {
             html += `
-              <a href="${c.url}" class="search-item" onclick="closeSearch()">
+              <a href="${c.url}" class="search-item" onclick="saveSearchHistory(searchInput.value); closeSearch()">
                 <div class="search-item-icon" style="background: ${c.bg_color}; color: ${c.color};">
                   <i class="fa-solid ${c.icon}"></i>
                 </div>
@@ -1235,7 +1272,7 @@
           html += `<div class="search-section-title">Colleges & Institutes</div>`;
           data.colleges.forEach(col => {
             html += `
-              <a href="${col.url}" class="search-item" onclick="closeSearch()">
+              <a href="${col.url}" class="search-item" onclick="saveSearchHistory(searchInput.value); closeSearch()">
                 <div class="search-item-icon" style="background: var(--brand-light); color: var(--brand);">
                   <i class="fa-solid fa-building-columns"></i>
                 </div>
@@ -1253,7 +1290,7 @@
           html += `<div class="search-section-title">Blog Articles</div>`;
           data.blogs.forEach(b => {
             html += `
-              <a href="${b.url}" class="search-item" onclick="closeSearch()">
+              <a href="${b.url}" class="search-item" onclick="saveSearchHistory(searchInput.value); closeSearch()">
                 <div class="search-item-icon" style="background: #ffe4e6; color: #e11d48;">
                   <i class="fa-solid fa-newspaper"></i>
                 </div>
@@ -1309,6 +1346,30 @@
 </script>
 
 @yield('scripts')
+
+<script>
+  window.addEventListener('load', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const collegeId = urlParams.get('college_id');
+    if (collegeId) {
+      const id = parseInt(collegeId);
+      setTimeout(() => {
+        const openFunc = window.openAgriDetails 
+                      || window.openArtsDetails 
+                      || window.openComDetails 
+                      || window.openHotelDetails 
+                      || window.openDetails 
+                      || window.openMgmtDetails 
+                      || window.openNonDetails 
+                      || window.openPharmaDetails 
+                      || window.openSciDetails;
+        if (typeof openFunc === 'function') {
+          openFunc(id);
+        }
+      }, 500);
+    }
+  });
+</script>
 
 <x-ai-career-chat />
 

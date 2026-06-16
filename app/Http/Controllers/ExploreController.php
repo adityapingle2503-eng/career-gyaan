@@ -407,7 +407,7 @@ class ExploreController extends Controller
                     'location' => $c->location . ', ' . $c->state,
                     'type' => $c->type,
                     'branches' => substr($c->popular_branches ?? 'General', 0, 80),
-                    'url' => $url,
+                    'url' => $url . '?college_id=' . $c->id,
                     'field' => $c->field ? $c->field->name : 'Institute',
                 ];
             });
@@ -466,97 +466,177 @@ class ExploreController extends Controller
         ];
     }
 
-    public function engineeringColleges()
+    public function engineeringColleges(Request $request)
     {
         $field = Field::where('slug', 'technology-engineering')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $types = $colleges->pluck('type')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.index', compact('field', 'colleges', 'districts', 'types', 'states'));
     }
 
-    public function medicalColleges()
+    public function medicalColleges(Request $request)
     {
         $field = Field::where('slug', 'medical')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $types = $colleges->pluck('type')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.medical', compact('field', 'colleges', 'districts', 'types', 'states'));
     }
 
-    public function hotelColleges()
+    public function hotelColleges(Request $request)
     {
         $field = Field::where('slug', 'hotel-management')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $locations = $colleges->pluck('location')->unique()->sort()->values();
         $tiers = ['Tier 1', 'Tier 2', 'Tier 3'];
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.hotel', compact('field', 'colleges', 'locations', 'tiers', 'states'));
     }
 
-    public function managementColleges()
+    public function managementColleges(Request $request)
     {
         $field = Field::where('slug', 'business')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $types = $colleges->pluck('type')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.management', compact('field', 'colleges', 'districts', 'types', 'states'));
     }
 
-    public function pharmacyColleges()
+    public function pharmacyColleges(Request $request)
     {
         $field = Field::where('slug', 'pharmacy')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $types = $colleges->pluck('type')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.pharmacy', compact('field', 'colleges', 'districts', 'types', 'states'));
     }
 
-    public function nonMbbsColleges()
+    public function nonMbbsColleges(Request $request)
     {
         $field = Field::where('slug', 'ayush-allied')->first() ?? Field::where('slug', 'medical')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $courses = ['BAMS', 'BHMS', 'BUMS', 'BNYS', 'BPT', 'BDS'];
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.non_mbbs', compact('field', 'colleges', 'courses', 'districts', 'states'));
     }
 
-    public function scienceColleges()
+    public function scienceColleges(Request $request)
     {
         $field = Field::where('slug', 'science')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.science', compact('field', 'colleges', 'districts', 'states'));
     }
 
-    public function artsColleges()
+    public function artsColleges(Request $request)
     {
         $field = Field::where('slug', 'arts-humanities')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.arts', compact('field', 'colleges', 'districts', 'states'));
     }
 
-    public function commerceColleges()
+    public function commerceColleges(Request $request)
     {
         $field = Field::where('slug', 'commerce')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.commerce', compact('field', 'colleges', 'districts', 'states'));
     }
 
-    public function agricultureColleges()
+    public function agricultureColleges(Request $request)
     {
         $field = Field::where('slug', 'agriculture')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        if ($request->has('college_id')) {
+            $selected = College::find($request->input('college_id'));
+            if ($selected && $selected->field_id == $field->id) {
+                if (!$colleges->contains('id', $selected->id)) {
+                    $colleges->prepend($selected); $colleges = $colleges->values();
+                }
+            }
+        }
         $districts = $colleges->pluck('location')->unique()->sort()->values();
         $states = $colleges->pluck('state')->unique()->sort()->values();
         return view('colleges.agriculture', compact('field', 'colleges', 'districts', 'states'));
