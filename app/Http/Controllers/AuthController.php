@@ -149,6 +149,48 @@ $user->update([
 }
 
     /**
+     * Verify Email OTP
+     */
+    public function verifyEmailOtp(Request $request)
+    {
+        $userId = session('verification_user_id');
+
+        if (!$userId) {
+            return redirect()->route('signup')->with('error', 'Session expired. Please sign up again.');
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return redirect()->route('signup')->with('error', 'User not found.');
+        }
+
+        $request->validate([
+            'otp' => 'required|string',
+        ]);
+
+        if ((string)$user->email_otp !== (string)$request->otp) {
+            return back()->with('error', 'Invalid OTP. Please try again.');
+        }
+
+        if ($user->email_otp_expires_at && now()->greaterThan($user->email_otp_expires_at)) {
+            return back()->with('error', 'OTP has expired. Please request a new one.');
+        }
+
+        $user->update([
+            'email_verified_at' => now(),
+            'email_otp' => null,
+            'email_otp_expires_at' => null,
+        ]);
+
+        session()->forget('verification_user_id');
+        
+        Auth::login($user);
+
+        return redirect()->route('home')->with('success', 'Email verified successfully! Welcome.');
+    }
+
+    /**
      * Logout
      */
     public function logout(Request $request)
