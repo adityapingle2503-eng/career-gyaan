@@ -7,11 +7,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
     /**
-     * Show the login form.
+     * Show login form
      */
     public function showLogin()
     {
@@ -19,7 +20,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle an authentication attempt.
+     * Login user
      */
     public function login(Request $request)
     {
@@ -28,19 +29,26 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && !$user->email_verified_at) {
+            return back()->withErrors([
+                'email' => 'Please verify your email before logging in.',
+            ])->onlyInput('email');
+        }
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
             return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
 
     /**
-     * Show the signup form.
+     * Show signup form
      */
     public function showSignup()
     {
@@ -48,7 +56,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle a registration request.
+     * Register user + send OTP
      */
     public function signup(Request $request)
     {
@@ -69,18 +77,83 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
+        // OTP generate
+     $otp = random_int(100000, 999999);
 
-        return redirect()->intended(route('home'));
+$user->update([
+    'email_otp' => $otp,
+    'email_otp_expires_at' => now()->addMinutes(10),
+    'last_otp_sent_at' => now(),
+]);
+
+        // send email
+        Mail::raw(
+            "Your CareerGyan email verification code is: {$otp}",
+            function ($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('Verify Your Email');
+            }
+        );
+
+        session(['verification_user_id' => $user->id]);
+
+        return redirect()->route('verify.email');
     }
 
     /**
-     * Log the user out of the application.
+     * RESEND OTP (FIXED)
+     */
+   public function resendEmailOtp(Request $request)
+{
+    $userId = session('verification_user_id');
+
+    if (!$userId) {
+        return redirect()->route('signup')
+            ->with('error', 'Session expired. Please sign up again.');
+    }
+
+    $user = User::find($userId);
+
+    if (!$user) {
+        return redirect()->route('signup')
+            ->with('error', 'User not found.');
+    }
+
+    // ⛔ HARD COOLDOWN (reliable)
+    if ($user->last_otp_sent_at &&
+        now()->diffInSeconds($user->last_otp_sent_at) < 60) {
+        return back()->with('error', 'Wait 60 seconds before resending OTP.');
+    }
+
+    $otp = random_int(100000, 999999);
+
+    $user->update([
+        'email_otp' => $otp,
+        'email_otp_expires_at' => now()->addMinutes(10),
+        'last_otp_sent_at' => now(),
+    ]);
+
+    try {
+        Mail::raw(
+            "Your CareerGyan OTP is: {$otp}",
+            function ($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('Verify Your Email');
+            }
+        );
+    } catch (\Exception $e) {
+        return back()->with('error', 'Mail error: ' . $e->getMessage());
+    }
+
+    return back()->with('success', 'OTP sent successfully.');
+}
+
+    /**
+     * Logout
      */
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -88,7 +161,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Show the user profile page.
+     * Show profile
      */
     public function showProfile()
     {
@@ -97,12 +170,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Update the user profile details and avatar.
+     * Update profile
      */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -111,27 +184,29 @@ class AuthController extends Controller
             'photo_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
         ]);
 
-        $user->first_name = $request->input('first_name');
-        $user->last_name = $request->input('last_name');
-        $user->name = $request->input('first_name') . ' ' . $request->input('last_name');
-        $user->phone = $request->input('phone');
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->name = $request->first_name . ' ' . $request->last_name;
+        $user->phone = $request->phone;
 
-        // Handle profile photo selection or upload
         if ($request->hasFile('photo_file')) {
             $file = $request->file('photo_file');
-            $destinationPath = public_path('uploads/avatars');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
+            $path = public_path('uploads/avatars');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0755, true);
             }
+
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move($destinationPath, $filename);
+            $file->move($path, $filename);
+
             $user->profile_photo = 'uploads/avatars/' . $filename;
         } elseif ($request->filled('avatar_preset')) {
-            $user->profile_photo = $request->input('avatar_preset');
+            $user->profile_photo = $request->avatar_preset;
         }
 
         $user->save();
 
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+        return back()->with('success', 'Profile updated successfully.');
     }
 }

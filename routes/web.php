@@ -115,6 +115,16 @@ Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('adm
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
 Route::get('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
+Route::get('/verify-email', function () {
+    return view('auth.verify-email');
+})->name('verify.email');
+
+Route::post('/verify-email', [AuthController::class, 'verifyEmailOtp'])
+    ->name('verify.email.submit');
+
+    Route::post('/resend-email-otp', [AuthController::class, 'resendEmailOtp'])
+    ->name('resend.email.otp');
+
 // Admin Panel (Protected by session checks inside the controllers)
 Route::get('/admin', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/suggestions', [SuggestionController::class, 'index'])->name('admin.suggestions');
