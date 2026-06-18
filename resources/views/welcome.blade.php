@@ -395,7 +395,7 @@
     margin-bottom: 2px;
   }
 
-  .hero-stat-card span {
+  .hero-stat-card > span {
     font-size: 13px;
     color: #94a3b8;
   }

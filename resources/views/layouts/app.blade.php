@@ -912,6 +912,7 @@
         <div class="nav-links">
           <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
           <a href="{{ url('/explore') }}" class="{{ request()->is('explore*') ? 'active' : '' }}">Explore</a>
+          <a href="{{ route('daily-quiz.index') }}" class="{{ request()->is('daily-quiz*') ? 'active' : '' }}">Daily Quiz 🔥</a>
           <a href="{{ url('/blog') }}" class="{{ request()->is('blog*') ? 'active' : '' }}">Blog</a>
           <a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'active' : '' }}">About</a>
         </div>
@@ -977,6 +978,9 @@
     </a>
     <a href="{{ url('/explore') }}" class="{{ request()->is('explore*') ? 'active' : '' }}">
       <i class="fa-solid fa-compass"></i> Explore Careers
+    </a>
+    <a href="{{ route('daily-quiz.index') }}" class="{{ request()->is('daily-quiz*') ? 'active' : '' }}">
+      <i class="fa-solid fa-fire" style="color: #fbbf24;"></i> Daily Quiz
     </a>
     <a href="{{ url('/blog') }}" class="{{ request()->is('blog*') ? 'active' : '' }}">
       <i class="fa-solid fa-newspaper"></i> Blog

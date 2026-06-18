@@ -8,6 +8,8 @@ use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AiCareerChatController;
+use App\Http\Controllers\DailyQuizController;
+use App\Http\Controllers\AdminQuizController;
 
 // Main pages
 Route::get('/', function () {
@@ -99,6 +101,12 @@ Route::middleware('auth')->group(function () {
     // AI Chatbot
     Route::post('/ai-career-chat/message', [AiCareerChatController::class, 'message'])->name('ai-career-chat.message');
     Route::get('/ai-career-chat/limit', [AiCareerChatController::class, 'getRemainingLimit'])->name('ai-career-chat.limit');
+
+    // Daily Quiz (auth required to take & view results)
+    Route::post('/daily-quiz/submit', [DailyQuizController::class, 'submit'])->name('daily-quiz.submit');
+    Route::get('/daily-quiz/take', [DailyQuizController::class, 'take'])->name('daily-quiz.take');
+    Route::get('/daily-quiz/result/{date}', [DailyQuizController::class, 'result'])->name('daily-quiz.result');
+    Route::get('/daily-quiz/my-stats', [DailyQuizController::class, 'myStats'])->name('daily-quiz.my-stats');
 });
 
 // Suggestions
@@ -126,6 +134,10 @@ Route::post('/verify-email', [AuthController::class, 'verifyEmailOtp'])
     ->name('resend.email.otp');
 
 // Admin Panel (Protected by session checks inside the controllers)
+// Daily Quiz (public landing + leaderboard)
+Route::get('/daily-quiz', [DailyQuizController::class, 'index'])->name('daily-quiz.index');
+Route::get('/daily-quiz/leaderboard', [DailyQuizController::class, 'leaderboard'])->name('daily-quiz.leaderboard');
+
 Route::get('/admin', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/suggestions', [SuggestionController::class, 'index'])->name('admin.suggestions');
 Route::get('/admin/users', [AdminAuthController::class, 'users'])->name('admin.users');
@@ -158,5 +170,15 @@ Route::delete('/admin/colleges/{id}', [\App\Http\Controllers\AdminCollegeControl
 Route::get('/admin/careers', [\App\Http\Controllers\AdminCareerController::class, 'index'])->name('admin.careers.index');
 Route::get('/admin/careers/{id}/edit', [\App\Http\Controllers\AdminCareerController::class, 'edit'])->name('admin.careers.edit');
 Route::put('/admin/careers/{id}', [\App\Http\Controllers\AdminCareerController::class, 'update'])->name('admin.careers.update');
+
+// Admin Quiz Management
+Route::get('/admin/quiz', [AdminQuizController::class, 'index'])->name('admin.quiz.index');
+Route::get('/admin/quiz/create', [AdminQuizController::class, 'create'])->name('admin.quiz.create');
+Route::post('/admin/quiz', [AdminQuizController::class, 'store'])->name('admin.quiz.store');
+Route::get('/admin/quiz/scores', [AdminQuizController::class, 'scores'])->name('admin.quiz.scores');
+Route::get('/admin/quiz/leaderboard', [AdminQuizController::class, 'leaderboard'])->name('admin.quiz.leaderboard');
+Route::get('/admin/quiz/{id}/edit', [AdminQuizController::class, 'edit'])->name('admin.quiz.edit');
+Route::put('/admin/quiz/{id}', [AdminQuizController::class, 'update'])->name('admin.quiz.update');
+Route::delete('/admin/quiz/{id}', [AdminQuizController::class, 'destroy'])->name('admin.quiz.destroy');
 
 Route::get('/debug-aicredits-test', [AiCareerChatController::class, 'debugAicreditsTest']);

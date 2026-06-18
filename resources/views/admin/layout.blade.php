@@ -471,6 +471,11 @@
           <i class="fa-solid fa-newspaper"></i> Blog Posts
         </a>
       </li>
+      <li class="admin-menu-item {{ str_starts_with($currentRoute, 'admin.quiz') ? 'active' : '' }}">
+        <a href="{{ route('admin.quiz.index') }}">
+          <i class="fa-solid fa-circle-question"></i> Daily Quiz
+        </a>
+      </li>
       
       <li class="menu-category">Feedback</li>
       <li class="admin-menu-item {{ $currentRoute == 'admin.suggestions' ? 'active' : '' }}">

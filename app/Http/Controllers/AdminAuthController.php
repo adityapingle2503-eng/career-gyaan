@@ -73,6 +73,13 @@ class AdminAuthController extends Controller
         $recentUsers = \App\Models\User::latest()->take(5)->get();
         $recentSuggestions = \App\Models\Suggestion::latest()->take(5)->get();
 
+        $quizAttemptCount = 0;
+        try {
+            if (class_exists(\App\Models\DailyQuizAttempt::class)) {
+                $quizAttemptCount = \App\Models\DailyQuizAttempt::count();
+            }
+        } catch (\Exception $e) {}
+
         return view('admin.dashboard', compact(
             'userCount',
             'careerCount',
@@ -81,7 +88,8 @@ class AdminAuthController extends Controller
             'fieldCount',
             'collegeCount',
             'recentUsers',
-            'recentSuggestions'
+            'recentSuggestions',
+            'quizAttemptCount'
         ));
     }
 }

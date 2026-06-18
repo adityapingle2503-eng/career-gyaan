@@ -77,6 +77,7 @@ class DatabaseSeeder extends Seeder
             MassCareersExpansionSeeder::class,
             BlogSeeder::class,
             CustomDataUpdateSeeder::class,
+            DailyQuizSeeder::class,
         ]);
     }
 }

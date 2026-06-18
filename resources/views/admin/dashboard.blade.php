@@ -339,6 +339,17 @@
     </div>
     <div class="stat-value">{{ number_format($suggestionCount) }}</div>
   </div>
+
+  <!-- Stat Card: Quiz Attempts -->
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-title">Quiz Attempts</span>
+      <div class="stat-icon-wrap" style="background: #fff5f5; color: #ef4444;">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+    </div>
+    <div class="stat-value">{{ number_format($quizAttemptCount ?? 0) }}</div>
+  </div>
 </div>
 
 <!-- Main Dashboard Split Layout -->
@@ -389,6 +400,13 @@
       <h2>Quick Actions</h2>
     </div>
     <div class="quick-actions-wrap">
+      <a href="{{ route('admin.quiz.index') }}" class="action-btn-link">
+        <div class="action-btn-left">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>Manage Daily Quiz</span>
+        </div>
+        <i class="fa-solid fa-arrow-right" style="font-size: 14px; color: #cbd5e1;"></i>
+      </a>
       <a href="{{ route('admin.blogs.create') }}" class="action-btn-link">
         <div class="action-btn-left">
           <i class="fa-solid fa-pen-to-square"></i>
