@@ -9,14 +9,18 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('email_otp_expires_at')->nullable();
+            if (!Schema::hasColumn('users', 'email_otp_expires_at')) {
+                $table->timestamp('email_otp_expires_at')->nullable();
+            }
         });
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_otp_expires_at');
+            if (Schema::hasColumn('users', 'email_otp_expires_at')) {
+                $table->dropColumn('email_otp_expires_at');
+            }
         });
     }
 };

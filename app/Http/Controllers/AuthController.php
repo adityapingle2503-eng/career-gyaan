@@ -32,8 +32,12 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if ($user && !$user->email_verified_at) {
+            if (Hash::check($request->password, $user->password)) {
+                session(['verification_user_id' => $user->id]);
+                return redirect()->route('verify.email')->with('success', 'Please verify your email to log in.');
+            }
             return back()->withErrors([
-                'email' => 'Please verify your email before logging in.',
+                'email' => 'Invalid credentials.',
             ])->onlyInput('email');
         }
 
@@ -121,8 +125,9 @@ $user->update([
 
     // ⛔ HARD COOLDOWN (reliable)
     if ($user->last_otp_sent_at &&
-        now()->diffInSeconds($user->last_otp_sent_at) < 60) {
-        return back()->with('error', 'Wait 60 seconds before resending OTP.');
+        $user->last_otp_sent_at->addSeconds(60)->isFuture()) {
+        $secondsLeft = max(1, (int)now()->diffInSeconds($user->last_otp_sent_at->addSeconds(60), false));
+        return back()->with('error', "Wait {$secondsLeft} seconds before resending OTP.");
     }
 
     $otp = random_int(100000, 999999);
@@ -149,45 +154,50 @@ $user->update([
 }
 
     /**
-     * Verify Email OTP
+     * Verify email OTP
      */
     public function verifyEmailOtp(Request $request)
     {
+        $request->validate([
+            'otp' => ['required', 'string', 'size:6'],
+        ]);
+
         $userId = session('verification_user_id');
 
         if (!$userId) {
-            return redirect()->route('signup')->with('error', 'Session expired. Please sign up again.');
+            return redirect()->route('signup')
+                ->with('error', 'Session expired or invalid. Please sign up again.');
         }
 
         $user = User::find($userId);
 
         if (!$user) {
-            return redirect()->route('signup')->with('error', 'User not found.');
+            return redirect()->route('signup')
+                ->with('error', 'User not found.');
         }
 
-        $request->validate([
-            'otp' => 'required|string',
-        ]);
-
-        if ((string)$user->email_otp !== (string)$request->otp) {
-            return back()->with('error', 'Invalid OTP. Please try again.');
+        if ($user->email_otp !== $request->otp) {
+            return back()->with('error', 'Invalid verification code.');
         }
 
-        if ($user->email_otp_expires_at && now()->greaterThan($user->email_otp_expires_at)) {
-            return back()->with('error', 'OTP has expired. Please request a new one.');
+        if ($user->email_otp_expires_at && now()->gt($user->email_otp_expires_at)) {
+            return back()->with('error', 'Verification code has expired. Please request a new OTP.');
         }
 
+        // Mark email as verified
         $user->update([
             'email_verified_at' => now(),
             'email_otp' => null,
             'email_otp_expires_at' => null,
         ]);
 
+        // Clear verification session
         session()->forget('verification_user_id');
-        
+
+        // Log the user in
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Email verified successfully! Welcome.');
+        return redirect()->route('home')->with('success', 'Email verified successfully! Welcome to CareerGyan.');
     }
 
     /**

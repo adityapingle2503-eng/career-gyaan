@@ -9,14 +9,18 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email_otp')->nullable();
+            if (!Schema::hasColumn('users', 'email_otp')) {
+                $table->string('email_otp')->nullable();
+            }
         });
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_otp');
+            if (Schema::hasColumn('users', 'email_otp')) {
+                $table->dropColumn('email_otp');
+            }
         });
     }
 };

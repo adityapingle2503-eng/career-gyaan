@@ -7,9 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up()
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->timestamp('last_otp_sent_at')->nullable();
-    });
-}
+    {
+        Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn('users', 'last_otp_sent_at')) {
+                $table->timestamp('last_otp_sent_at')->nullable();
+            }
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasColumn('users', 'last_otp_sent_at')) {
+                $table->dropColumn('last_otp_sent_at');
+            }
+        });
+    }
 };
