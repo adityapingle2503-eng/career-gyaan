@@ -469,7 +469,7 @@ class ExploreController extends Controller
     public function engineeringColleges(Request $request)
     {
         $field = Field::where('slug', 'technology-engineering')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -487,7 +487,7 @@ class ExploreController extends Controller
     public function medicalColleges(Request $request)
     {
         $field = Field::where('slug', 'medical')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -505,7 +505,7 @@ class ExploreController extends Controller
     public function hotelColleges(Request $request)
     {
         $field = Field::where('slug', 'hotel-management')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -523,7 +523,7 @@ class ExploreController extends Controller
     public function managementColleges(Request $request)
     {
         $field = Field::where('slug', 'business')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -541,7 +541,7 @@ class ExploreController extends Controller
     public function pharmacyColleges(Request $request)
     {
         $field = Field::where('slug', 'pharmacy')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -559,7 +559,7 @@ class ExploreController extends Controller
     public function nonMbbsColleges(Request $request)
     {
         $field = Field::where('slug', 'ayush-allied')->first() ?? Field::where('slug', 'medical')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -577,7 +577,7 @@ class ExploreController extends Controller
     public function scienceColleges(Request $request)
     {
         $field = Field::where('slug', 'science')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -594,7 +594,7 @@ class ExploreController extends Controller
     public function artsColleges(Request $request)
     {
         $field = Field::where('slug', 'arts-humanities')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -611,7 +611,7 @@ class ExploreController extends Controller
     public function commerceColleges(Request $request)
     {
         $field = Field::where('slug', 'commerce')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {
@@ -628,7 +628,7 @@ class ExploreController extends Controller
     public function agricultureColleges(Request $request)
     {
         $field = Field::where('slug', 'agriculture')->firstOrFail();
-        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->limit(200)->get();
+        $colleges = College::where('field_id', $field->id)->orderByRaw('-rank DESC')->orderBy('name')->get();
         if ($request->has('college_id')) {
             $selected = College::find($request->input('college_id'));
             if ($selected && $selected->field_id == $field->id) {

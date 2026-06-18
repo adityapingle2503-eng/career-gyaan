@@ -339,7 +339,7 @@
             return matchQ && matchLoc && matchType && matchState;
         });
 
-        renderCards(filtered);
+        renderCards(filtered.slice(0, 100));
     }
 
     // Event Listeners

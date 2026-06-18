@@ -1169,10 +1169,20 @@
           <div class="search-item-content">
             <h4 style="margin:0; font-size:14px;">${q}</h4>
           </div>
+          <div style="margin-left: auto; padding: 5px; color: var(--text-3);" onclick="event.stopPropagation(); removeSearchHistory('${escapedQ}')">
+            <i class="fa-solid fa-xmark"></i>
+          </div>
         </div>
       `;
     });
     searchResults.innerHTML = html;
+  }
+
+  function removeSearchHistory(query) {
+    let history = getSearchHistory();
+    history = history.filter(q => q !== query);
+    localStorage.setItem('cg_search_history', JSON.stringify(history));
+    showSearchHistory();
   }
 
   function openSearch() {

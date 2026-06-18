@@ -371,7 +371,7 @@
             return matchQ && matchLoc && matchType && matchNeet;
         });
 
-        renderCards(filtered);
+        renderCards(filtered.slice(0, 100));
     }
 
     // Event Listeners
